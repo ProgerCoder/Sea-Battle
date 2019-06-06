@@ -53,53 +53,60 @@ def game(ships):
     set_ships(bot_board)
     print(print_board(user_board))
     wrongs = []
+    step = 1
     while not is_win(bot_board) and not is_win(user_board):
-        while True:
-            try:
-                x = int(input("Введи 1 координату от 1 до 5: "))
-                if x < 1 or x > 5:
-                    print("Я тебя не понимаю!")
-                    continue
-                else:
-                    y = int(input("Введи 2 координату от 1 до 5: "))
-                    if y < 1 or y > 5:
+        if step == 1:
+            while True:
+                try:
+                    x = int(input("Введи 1 координату от 1 до 5: "))
+                    if x < 1 or x > 5:
                         print("Я тебя не понимаю!")
+                        continue
                     else:
-                        break
-            except ValueError:
-                print("Я тебя не понимаю!")
-        if shoot(bot_board, x, y):
-            ships -= 1
-            print("Ты попал! У противника осталось", ships,"кораблей!")
-        else:
-            print("Промазал!")
-        if is_win(bot_board):
-            print("Ты выиграл!")
-        if is_win(user_board):
-            print("Ты проиграл!")
-        iswrong = False
-        while True:
-            x = random.randint(1, 5)
-            y = random.randint(1, 5)
-            if not wrongs == []:
-                for i in range(len(wrongs)):
-                    if x == wrongs[i][0]:
-                        if y == wrongs[i][1]:
-                            iswrong = True
+                        y = int(input("Введи 2 координату от 1 до 5: "))
+                        if y < 1 or y > 5:
+                            print("Я тебя не понимаю!")
+                        else:
                             break
-                    else:
-                        iswrong = False
-                if not iswrong:
-                    break
+                except ValueError:
+                    print("Я тебя не понимаю!")
+            if shoot(bot_board, x, y):
+                ships -= 1
+                print("Ты попал! У противника осталось", ships,"кораблей!")
+                step = 1
             else:
-                break
-        if shoot(user_board, x, y):
-            print("В тебя попали!")
-            wrongs.append([x, y])
+                print("Промазал!")
+                step = 2
+            if is_win(bot_board):
+                print("Ты выиграл!")
         else:
-            print("Соперник прмахнулся!")
-            wrongs.append([x, y])
-        print(print_board(user_board))
+            iswrong = False
+            while True:
+                x = random.randint(1, 5)
+                y = random.randint(1, 5)
+                if not wrongs == []:
+                    for i in range(len(wrongs)):
+                        if x == wrongs[i][0]:
+                            if y == wrongs[i][1]:
+                                iswrong = True
+                                break
+                        else:
+                            iswrong = False
+                    if not iswrong:
+                        break
+                else:
+                    break
+            if shoot(user_board, x, y):
+                print("В тебя попали!")
+                step = 2
+                wrongs.append([x, y])
+            else:
+                print("Соперник прмахнулся!")
+                step = 1
+                wrongs.append([x, y])
+            print(print_board(user_board))
+            if is_win(user_board):
+                print("Ты проиграл!")
     while True:
         isrestart = input("Хочешь поиграть ещё?(да/нет): ").lower()
         if isrestart == "да":

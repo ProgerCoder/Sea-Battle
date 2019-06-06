@@ -1,134 +1,111 @@
-#Sea Battle - Console application
+#Sea Battle mini - Console Application
+#5x5 ships - 5 of 1
+#■╳○
 import random
-def setfield():
-    field = [[".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."],
-             [".",".",".",".",".",".",".",".",".","."]]
-    fieldX = field
-    ships = { "1":{"1":[["", ""]], "2":[["", ""]], "3":[["", ""]], "4":[["", ""]]},
-             "2":{"1":[["", ""], ["", ""]], "2":[["", ""], ["", ""]], "3":[["", ""], ["", ""]]},
-             "3":{"1":[["", ""], ["", ""], ["", ""]], "2":[["", ""], ["", ""], ["", ""]]},
-             "4":{"1":[["", ""], ["", ""], ["", ""], ["", ""]]} }
-    #print(ships["2"]["1"][1], ships["2"]["1"])
-    for s in ships:
-        print(s)
-        for i in ships[s]:
-            print(i)
-            #print(len(ships["2"]["1"]), "lal")
-            if s == "1":
-                #print("ship - 1")
-                for r in range(len(ships[s]["1"])):
-                    while True:
-                        x = random.randint(0,9)
-                        y = random.randint(0,9)
-                        if fieldX[y][x] != "1":
-                            ships[s][i][r-1][0] = x
-                            ships[s][i][r-1][1] = y
-                            fieldX[y][x] = "1"
-                            break
+boardlength = 5
+ships = 10
+def restart():
+    game()
+def create_board():
+    board = []
+    for i in range(boardlength):
+        board.append(["○"] * boardlength)
+    return board
+def print_board(board):
+    draw = ""
+    for i in board:
+        for l in i:
+            draw += l
+        draw += "\n"
+    return draw
+def set_ships(board):
+    for i in range(ships):
+        while True:
+            x = random.randint(0,4)
+            y = random.randint(0,4)
+            if not board[y][x] == "■":
+                board[y][x] = "■"
+                break
+def is_win(board):
+    iswin = False
+    for i in board:
+        for l in i:
+            if not l == "■":
+                iswin = True
             else:
-                #print("ships - other")
-                #print(r)
-                #print(len(ships[s][i])) #all ships
-                direction = 1
-                while True:
-                    #for t in range(0, len(ships[s][i])):
-                    length = int(s)
-                    x2 = None
-                    y2 = None
-                    if r == 0:
-                        while True:
-                            x2 = random.randint(0,9)
-                            y2 = random.randint(0,9)
-                            if fieldX[y2][x2] != "X":
-                                ships[s][i][r][0] = x2
-                                ships[s][i][r][1] = y2
-                                fieldX[y2][x2] = "X"
-                                break
+                iswin = False
+                break
+        if not iswin:
+            iswin = False
+            break
+    return iswin
+def shoot(board, x, y):
+    ishit = False
+    if board[y-1][x-1] == "■":
+        ishit = True
+    board[y-1][x-1] = "◉"
+    return ishit
+def game(ships):
+    print("Игра Морской Бой 5х5")
+    user_board = create_board()
+    bot_board = create_board()
+    set_ships(user_board)
+    set_ships(bot_board)
+    print(print_board(user_board))
+    wrongs = []
+    while not is_win(bot_board) and not is_win(user_board):
+        while True:
+            try:
+                x = int(input("Введи 1 координату от 1 до 5: "))
+                if x < 1 or x > 5:
+                    print("Я тебя не понимаю!")
+                    continue
+                else:
+                    y = int(input("Введи 2 координату от 1 до 5: "))
+                    if y < 1 or y > 5:
+                        print("Я тебя не понимаю!")
                     else:
-                        if direction == 1:
-                            if not y2 + length > 9:
-                                isX = False
-                                for y in range(1, length+1):
-                                    if fieldX[y2+y][x2] != "X":
-                                        pass
-                                    else:
-                                        direction += 1
-                                        isX = True
-                                        break
-                                if not isX:
-                                    for o in range(0, length):
-                                        y2 += 1
-                                        ships[s][i][r][0] = y2
-                                        ships[s][i][r][1] = x2
-                                        fieldX[y2][x2] = "X"
-                                    break
-                            else:
-                                direction += 1
-                        elif direction == 2:
-                            if not x2 + length > 9:
-                                isX = False
-                                for x in range(1, length + 1):
-                                    if fieldX[y2][x2 + x] != "X":
-                                        pass
-                                    else:
-                                        direction += 1
-                                        isX = True
-                                        break
-                                if not isX:
-                                    for o in range(0, length):
-                                        x2 += 1
-                                        ships[s][i][r][0] = y2
-                                        ships[s][i][r][1] = x2
-                                        fieldX[y2][x2] = "X"
-                                    break
-                            else:
-                                direction += 1
-                        elif direction == 3:
-                            if not y2 - length < 0:
-                                isX = False
-                                for y in range(1, length + 1):
-                                    if fieldX[y2 - y][x2] != "X":
-                                        pass
-                                    else:
-                                        direction += 1
-                                        isX = True
-                                        break
-                                if not isX:
-                                    for o in range(0, length):
-                                        y2 -= 1
-                                        ships[s][i][r][0] = y2
-                                        ships[s][i][r][1] = x2
-                                        fieldX[y2][x2] = "X"
-                                    break
-                            else:
-                                direction += 1
-                        elif direction == 4:
-                            if not x2 - length < 0:
-                                isX = False
-                                for x in range(1, length + 1):
-                                    if fieldX[y2][x2 - x] != "X":
-                                        pass
-                                    else:
-                                        direction += 1
-                                        isX = True
-                                        break
-                                if not isX:
-                                    for o in range(0, length):
-                                        x2 -= 1
-                                        ships[s][i][r][0] = y2
-                                        ships[s][i][r][1] = x2
-                                        fieldX[y2][x2] = "X"
-                                    break
-                            else:
-                                direction += 1
-    for i in range(0, len(fieldX)):
-        print(fieldX[i])
-setfield()
+                        break
+            except ValueError:
+                print("Я тебя не понимаю!")
+        if shoot(bot_board, x, y):
+            ships -= 1
+            print("Ты попал! У противника осталось", ships,"кораблей!")
+        else:
+            print("Промазал!")
+        if is_win(bot_board):
+            print("Ты выиграл!")
+        if is_win(user_board):
+            print("Ты проиграл!")
+        iswrong = False
+        while True:
+            x = random.randint(1, 5)
+            y = random.randint(1, 5)
+            if not wrongs == []:
+                for i in range(len(wrongs)):
+                    if x == wrongs[i][0]:
+                        if y == wrongs[i][1]:
+                            iswrong = True
+                            break
+                    else:
+                        iswrong = False
+                if not iswrong:
+                    break
+            else:
+                break
+        if shoot(user_board, x, y):
+            print("В тебя попали!")
+            wrongs.append([x, y])
+        else:
+            print("Соперник прмахнулся!")
+            wrongs.append([x, y])
+        print(print_board(user_board))
+    while True:
+        isrestart = input("Хочешь поиграть ещё?(да/нет): ").lower()
+        if isrestart == "да":
+            print("Хорошо! Удачи!")
+            restart()
+        elif isrestart == "нет":
+            print("Пока!")
+            break
+game(ships)
